@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es-CR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#075985">
+  <meta name="description" content="Herramienta local y offline para cálculo de porfirinas y porfobilinógeno.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Porfirinas PBG">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'">
+  <title>Analizador de Porfirinas y PBG</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Saltar al contenido</a>
+
+  <header class="app-header">
+    <div class="brand-mark" aria-hidden="true">PBG</div>
+    <div class="brand-copy">
+      <p class="eyebrow">Laboratorio clínico · herramienta local</p>
+      <h1>Analizador de Porfirinas y PBG</h1>
+      <p>Calcula, grafica y conserva registros sin enviar datos a servidores externos.</p>
+    </div>
+    <div class="header-actions">
+      <span id="connection-status" class="status-pill" role="status">Comprobando conexión…</span>
+      <button id="install-button" class="button secondary hidden" type="button">Instalar aplicación</button>
+    </div>
+  </header>
+
+  <div id="update-banner" class="update-banner hidden" role="status">
+    <span>Hay una versión nueva disponible.</span>
+    <button id="update-button" class="button small" type="button">Actualizar ahora</button>
+  </div>
+
+  <main id="main-content">
+    <section class="notice warning-notice" aria-label="Aviso de uso">
+      <strong>Uso profesional:</strong>
+      esta aplicación es una herramienta de cálculo. No sustituye la validación analítica, los controles de calidad, el protocolo del laboratorio ni el diagnóstico clínico. Los factores e intervalos deben revisarse contra el método local validado.
+    </section>
+
+    <section class="panel" aria-labelledby="patient-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">Paso 1</p>
+          <h2 id="patient-heading">Datos del paciente y muestra</h2>
+        </div>
+        <button id="clear-form-button" class="button ghost" type="button">Limpiar formulario</button>
+      </div>
+
+      <div class="form-grid four-columns">
+        <div class="field">
+          <label for="patient-id">Identificación</label>
+          <input id="patient-id" name="patientId" type="text" maxlength="24" autocomplete="off" placeholder="Ej. 1-0123-0456">
+          <p id="patient-id-error" class="field-error" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="patient-name">Nombre completo</label>
+          <input id="patient-name" name="patientName" type="text" maxlength="120" autocomplete="off" placeholder="Nombre del paciente" required>
+          <p id="patient-name-error" class="field-error" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="analysis-date">Fecha del análisis</label>
+          <input id="analysis-date" name="analysisDate" type="date" required>
+          <p id="analysis-date-error" class="field-error" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <label for="operator-name">Operador / responsable</label>
+          <input id="operator-name" name="operatorName" type="text" maxlength="120" autocomplete="off" placeholder="Nombre del operador">
+          <p id="operator-name-error" class="field-error" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="input-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">Paso 2</p>
+          <h2 id="input-heading">Datos analíticos</h2>
+        </div>
+        <div class="sample-actions" aria-label="Datos demostrativos">
+          <span>Casos demostrativos:</span>
+          <button class="button ghost small demo-button" data-demo="normal" type="button">Control</button>
+          <button class="button ghost small demo-button" data-demo="pbg" type="button">PBG elevado</button>
+          <button class="button ghost small demo-button" data-demo="porphyrins" type="button">Porfirinas elevadas</button>
+        </div>
+      </div>
+
+      <div class="analysis-layout">
+        <div class="measurement-card">
+          <h3>PBG y creatinina</h3>
+          <div class="field">
+            <label for="pbg-absorbance">Absorbancia PBG a 555 nm</label>
+            <input id="pbg-absorbance" type="number" inputmode="decimal" min="0" max="2.5" step="0.0001" value="0.0200">
+            <p id="pbg-absorbance-error" class="field-error" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="creatinine">Creatinina (mg/dL)</label>
+            <input id="creatinine" type="number" inputmode="decimal" min="0.01" max="1000" step="0.01" value="76.00">
+            <p id="creatinine-error" class="field-error" aria-live="polite"></p>
+          </div>
+          <div class="technical-note">
+            Proteja las muestras de la luz y aplique el blanco, diluciones y controles establecidos en el procedimiento analítico validado.
+          </div>
+        </div>
+
+        <div class="measurement-card spectrum-card">
+          <div class="card-title-row">
+            <h3>Espectro 370–440 nm</h3>
+            <div class="spectrum-actions">
+              <button id="import-spectrum-button" class="button ghost small" type="button">Importar Excel</button>
+              <button id="reset-spectrum-button" class="button ghost small" type="button">Restablecer</button>
+            </div>
+          </div>
+          <input id="spectrum-file-input" class="hidden" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+          <p id="spectrum-file-info" class="spectrum-file-info" aria-live="polite"></p>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Longitud de onda</th>
+                  <th scope="col">Absorbancia</th>
+                </tr>
+              </thead>
+              <tbody id="spectrum-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="primary-action-row">
+        <p id="calculation-state" class="calculation-state">Los resultados se actualizarán al calcular.</p>
+        <button id="calculate-button" class="button primary large" type="button">Calcular y graficar</button>
+      </div>
+    </section>
+
+    <section id="results-section" class="panel hidden" aria-labelledby="results-heading">
+      <div class="section-heading">
+        <div>
+          <p class="step-label">Paso 3</p>
+          <h2 id="results-heading">Resultados calculados</h2>
+        </div>
+        <div class="result-actions">
+          <button id="save-button" class="button success" type="button" disabled>Guardar registro</button>
+          <button id="print-button" class="button secondary" type="button">Imprimir informe</button>
+        </div>
+      </div>
+
+      <div id="print-patient-summary" class="print-patient-summary"></div>
+      <div id="metrics-grid" class="metrics-grid"></div>
+
+      <div class="chart-panel">
+        <div class="chart-header">
+          <div>
+            <h3>Curva espectral</h3>
+            <p>Línea medida, línea base y señal corregida en el máximo.</p>
+          </div>
+        </div>
+        <svg id="spectrum-chart" viewBox="0 0 900 360" role="img" aria-label="Gráfico del espectro de absorbancia"></svg>
+        <div class="chart-legend" aria-hidden="true">
+          <span><i class="legend-line measured"></i>Medición</span>
+          <span><i class="legend-line baseline"></i>Línea base</span>
+          <span><i class="legend-line corrected"></i>Señal corregida</span>
+        </div>
+      </div>
+
+      <div id="interpretation-card" class="interpretation-card"></div>
+      <div id="warnings-list" class="warnings-list hidden"></div>
+
+      <div class="signature-block">
+        <div>
+          <span>Profesional responsable</span>
+        </div>
+        <div>
+          <span>Código / firma</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="history-heading">
+      <div class="section-heading history-heading-row">
+        <div>
+          <p class="step-label">Historial local</p>
+          <h2 id="history-heading">Registros guardados</h2>
+        </div>
+        <div class="history-actions">
+          <button id="export-json-button" class="button secondary small" type="button">Respaldar JSON</button>
+          <button id="export-csv-button" class="button secondary small" type="button">Exportar CSV</button>
+          <button id="import-button" class="button secondary small" type="button">Importar respaldo</button>
+          <button id="delete-all-button" class="button danger ghost-danger small" type="button">Eliminar todo</button>
+          <input id="import-input" class="hidden" type="file" accept="application/json,.json">
+        </div>
+      </div>
+
+      <div class="history-toolbar">
+        <label class="search-field" for="history-search">
+          <span>Buscar historial</span>
+          <input id="history-search" type="search" placeholder="Nombre, identificación, fecha o interpretación">
+        </label>
+        <span id="record-count" class="record-count">0 registros</span>
+      </div>
+
+      <div class="table-scroll history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Identificación</th>
+              <th scope="col">Paciente</th>
+              <th scope="col">PBG µg/mL</th>
+              <th scope="col">Porfirinas nmol/dL</th>
+              <th scope="col">Interpretación</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span id="app-version"></span>
+    <span>Datos almacenados únicamente en este navegador mediante IndexedDB.</span>
+  </footer>
+
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <dialog id="import-dialog">
+    <form method="dialog" class="dialog-card">
+      <h2>Importar respaldo</h2>
+      <p id="import-dialog-summary"></p>
+      <div class="dialog-actions">
+        <button id="import-cancel-button" class="button ghost" value="cancel">Cancelar</button>
+        <button id="import-merge-button" class="button secondary" value="merge">Combinar</button>
+        <button id="import-replace-button" class="button danger" value="replace">Reemplazar historial</button>
+      </div>
+    </form>
+  </dialog>
+
+  <template id="spectrum-row-template">
+    <tr>
+      <th scope="row"></th>
+      <td>
+        <input class="spectrum-input" type="number" inputmode="decimal" min="0" max="2.5" step="0.0001" value="0.0000">
+        <p class="field-error" aria-live="polite"></p>
+      </td>
+    </tr>
+  </template>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
