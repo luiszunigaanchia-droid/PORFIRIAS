@@ -1,7 +1,7 @@
 export const APP_VERSION = '5.0.0';
 export const ALGORITHM_VERSION = '5.0.0';
 
-export const WAVELENGTHS = Object.freeze([370, 380, 390, 400, 405, 410, 420, 425, 440]);
+export const WAVELENGTHS = Object.freeze([370, 380, 390, 400, 405, 410, 415, 420, 425, 430, 440]);
 
 export const ANALYTICAL_CONFIG = Object.freeze({
   pbgUgMlFactor: 630,
