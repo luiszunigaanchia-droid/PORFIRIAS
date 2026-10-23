@@ -2,6 +2,7 @@
 
 const CACHE_PREFIX = 'porfirias2-pbg-';
 const CACHE_NAME = `${CACHE_PREFIX}v5.0.0`;
+const SCOPE_PATH = new URL(self.registration.scope).pathname;
 const APP_SHELL = [
   './',
   './index.html',
@@ -70,7 +71,7 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(SCOPE_PATH)) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(networkFirstNavigation(request, event));
