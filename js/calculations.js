@@ -39,8 +39,13 @@ export function validateSpectrum(spectrum) {
 
   return spectrum.map((point, index) => {
     const wavelength = Number(point?.wavelength);
-    const absorbance = Number(point?.absorbance);
     const expectedWavelength = WAVELENGTHS[index];
+    const rawAbsorbance = point?.absorbance;
+    if (rawAbsorbance === null || rawAbsorbance === undefined ||
+        (typeof rawAbsorbance === 'string' && rawAbsorbance.trim() === '')) {
+      throw new ValidationError(`Falta la absorbancia a ${expectedWavelength} nm.`, `spectrum-${expectedWavelength}`);
+    }
+    const absorbance = Number(rawAbsorbance);
 
     if (wavelength !== expectedWavelength) {
       throw new ValidationError(`Se esperaba la longitud de onda ${expectedWavelength} nm.`, 'spectrum');
